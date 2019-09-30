@@ -1,4 +1,4 @@
-DOCKER_REGISTRY   ?= gcr.io
+DOCKER_REGISTRY   ?= piranhahu
 IMAGE_PREFIX      ?= kubernetes-helm
 DEV_IMAGE         ?= golang:1.10
 SHORT_NAME        ?= tiller
