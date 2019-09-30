@@ -30,6 +30,7 @@ curl -L -o /tmp/docker-$VER.tgz https://download.docker.com/linux/static/stable/
 tar -xz -C /tmp -f /tmp/docker-$VER.tgz
 mv /tmp/docker/* /usr/bin
 
+echo "username ${DOCKERHUB_USERNAME}"
 docker login -u ${DOCKERHUB_USERNAME:-} -p ${DOCKERHUB_PASSWORD:-} docker.io
 
 echo "Building the tiller image"
