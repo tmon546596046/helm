@@ -3,7 +3,7 @@ IMAGE_PREFIX      ?= kubernetes-helm
 DEV_IMAGE         ?= golang:1.10
 SHORT_NAME        ?= tiller
 SHORT_NAME_RUDDER ?= rudder
-TARGETS           ?= darwin/amd64 linux/amd64 linux/386 linux/arm linux/arm64 linux/ppc64le linux/s390x windows/amd64
+TARGETS           ?= darwin/amd64 linux/amd64 linux/386 linux/arm linux/arm64 linux/ppc64le linux/s390x windows/amd64 linux/mips64le
 DIST_DIRS         = find * -type d -exec
 
 # go option
@@ -64,9 +64,13 @@ docker-binary:
 	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 $(GO) build -o $(BINDIR)/helm $(GOFLAGS) -tags '$(TAGS)' -ldflags '$(LDFLAGS)' k8s.io/helm/cmd/helm
 	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 $(GO) build -o $(BINDIR)/tiller $(GOFLAGS) -tags '$(TAGS)' -ldflags '$(LDFLAGS)' k8s.io/helm/cmd/tiller
 
-.PHONY: docker-build
+.PHONY: docker-build docker-all
 docker-build: check-docker docker-binary
 	docker build --rm -t ${IMAGE} rootfs
+	docker tag ${IMAGE} ${MUTABLE_IMAGE}
+
+docker-all:
+	docker build --rm -t ${IMAGE} -f rootfs/Dockerfile.all .
 	docker tag ${IMAGE} ${MUTABLE_IMAGE}
 
 .PHONY: docker-binary-rudder

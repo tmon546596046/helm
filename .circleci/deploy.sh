@@ -20,9 +20,6 @@ if [[ -n "${CIRCLE_PR_NUMBER:-}" ]]; then
   exit
 fi
 
-: ${GCLOUD_SERVICE_KEY:?"GCLOUD_SERVICE_KEY environment variable is not set"}
-: ${PROJECT_NAME:?"PROJECT_NAME environment variable is not set"}
-
 VERSION=
 if [[ -n "${CIRCLE_TAG:-}" ]]; then
   VERSION="${CIRCLE_TAG}"
@@ -39,26 +36,18 @@ curl -L -o /tmp/docker-$VER.tgz https://download.docker.com/linux/static/stable/
 tar -xz -C /tmp -f /tmp/docker-$VER.tgz
 mv /tmp/docker/* /usr/bin
 
-echo "Install gcloud components"
-export CLOUDSDK_CORE_DISABLE_PROMPTS=1
-curl https://sdk.cloud.google.com | bash
-${HOME}/google-cloud-sdk/bin/gcloud --quiet components update
-
-echo "Configuring gcloud authentication"
-echo "${GCLOUD_SERVICE_KEY}" | base64 --decode > "${HOME}/gcloud-service-key.json"
-${HOME}/google-cloud-sdk/bin/gcloud auth activate-service-account --key-file "${HOME}/gcloud-service-key.json"
-${HOME}/google-cloud-sdk/bin/gcloud config set project "${PROJECT_NAME}"
-docker login -u _json_key -p "$(cat ${HOME}/gcloud-service-key.json)" https://gcr.io
+docker login -u ${DOCKERHUB_USERNAME:-} -p ${DOCKERHUB_PASSWORD:-} docker.io
 
 echo "Building the tiller image"
 make docker-build VERSION="${VERSION}"
 
-echo "Pushing image to gcr.io"
-docker push "gcr.io/kubernetes-helm/tiller:${VERSION}"
+echo "Pushing image to dockerhub"
+docker push "piranhahu/kubernetes-helm/tiller:${VERSION}"
 
 echo "Building helm binaries"
 make build-cross
 make dist checksum VERSION="${VERSION}"
 
-echo "Pushing binaries to gs bucket"
-${HOME}/google-cloud-sdk/bin/gsutil cp ./_dist/* "gs://${PROJECT_NAME}"
+echo "Pushing image to dockerhub"
+make docker-all VERSION="${VERSION}"
+docker push "piranhahu/kubernetes-helm/tiller:${VERSION}"
