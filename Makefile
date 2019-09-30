@@ -1,7 +1,8 @@
-DOCKER_REGISTRY   ?= piranhahu
-IMAGE_PREFIX      ?= kubernetes-helm
+DOCKER_REGISTRY   ?= docker.io
+IMAGE_PREFIX      ?= piranhahu
 DEV_IMAGE         ?= golang:1.10
 SHORT_NAME        ?= tiller
+ALL_SHORT_NAME    ?= helm
 SHORT_NAME_RUDDER ?= rudder
 TARGETS           ?= darwin/amd64 linux/amd64 linux/386 linux/arm linux/arm64 linux/ppc64le linux/s390x windows/amd64 linux/mips64le
 DIST_DIRS         = find * -type d -exec
@@ -70,8 +71,8 @@ docker-build: check-docker docker-binary
 	docker tag ${IMAGE} ${MUTABLE_IMAGE}
 
 docker-all:
-	docker build --rm -t ${IMAGE} -f rootfs/Dockerfile.all .
-	docker tag ${IMAGE} ${MUTABLE_IMAGE}
+	docker build --rm -t ${ALLIMAGE} -f rootfs/Dockerfile.all .
+	docker tag ${ALLIMAGE} ${MUTABLE_ALLIMAGE}
 
 .PHONY: docker-binary-rudder
 docker-binary-rudder: BINDIR = ./rootfs

@@ -21,7 +21,7 @@ if [[ -n "${CIRCLE_TAG:-}" ]]; then
 elif [[ "${CIRCLE_BRANCH:-}" == "master" ]]; then
   VERSION="canary"
 else
-  VERSION="v2.11.0-test"
+  VERSION="canary"
 fi
 
 echo "Install docker client"
@@ -30,14 +30,13 @@ curl -L -o /tmp/docker-$VER.tgz https://download.docker.com/linux/static/stable/
 tar -xz -C /tmp -f /tmp/docker-$VER.tgz
 mv /tmp/docker/* /usr/bin
 
-echo "username ${DOCKERHUB_USERNAME}"
-docker login -u ${DOCKERHUB_USERNAME:-} -p ${DOCKERHUB_PASSWORD:-} docker.io
+docker login -u ${DOCKERHUB_USERNAME:-} -p ${DOCKERHUB_PASSWORD:-} docker.io/${DOCKERHUB_USERNAME:-}
 
 echo "Building the tiller image"
 make docker-build VERSION="${VERSION}"
 
 echo "Pushing image to dockerhub"
-docker push "piranhahu/kubernetes-helm/tiller:${VERSION}"
+docker push "docker.io/piranhahu/tiller:${VERSION}"
 
 echo "Building helm binaries"
 make build-cross
@@ -45,4 +44,4 @@ make dist checksum VERSION="${VERSION}"
 
 echo "Pushing image to dockerhub"
 make docker-all VERSION="${VERSION}"
-docker push "piranhahu/kubernetes-helm/tiller:${VERSION}"
+docker push "docker.io/piranhahu/helm:${VERSION}"
