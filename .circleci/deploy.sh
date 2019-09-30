@@ -36,7 +36,7 @@ echo "Building the tiller image"
 make docker-build VERSION="${VERSION}"
 
 echo "Pushing image to dockerhub"
-docker push "docker.io/piranhahu/tiller:${VERSION}"
+docker push "piranhahu/tiller:${VERSION}"
 
 echo "Building helm binaries"
 make build-cross
@@ -44,4 +44,4 @@ make dist checksum VERSION="${VERSION}"
 
 echo "Pushing image to dockerhub"
 make docker-all VERSION="${VERSION}"
-docker push "docker.io/piranhahu/helm:${VERSION}"
+docker push "piranhahu/helm:${VERSION}"
