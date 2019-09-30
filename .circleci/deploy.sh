@@ -43,5 +43,6 @@ make build-cross
 make dist checksum VERSION="${VERSION}"
 
 echo "Pushing image to dockerhub"
+cp /root/.glide mycache
 make docker-all VERSION="${VERSION}"
 docker push "piranhahu/helm:${VERSION}"
