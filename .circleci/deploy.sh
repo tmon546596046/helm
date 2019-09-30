@@ -15,11 +15,6 @@
 # limitations under the License.
 set -euo pipefail
 
-# Skip on pull request builds
-if [[ -n "${CIRCLE_PR_NUMBER:-}" ]]; then
-  exit
-fi
-
 VERSION=
 if [[ -n "${CIRCLE_TAG:-}" ]]; then
   VERSION="${CIRCLE_TAG}"
